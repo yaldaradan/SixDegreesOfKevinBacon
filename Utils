@@ -1,0 +1,41 @@
+package ca.yorku.eecs;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.neo4j.driver.v1.*;
+
+import java.util.List;
+import java.util.Map;
+
+public class Utils {
+
+    private static final String URI = "bolt://localhost:7687";
+    private static final String USERNAME = "neo4j";
+    private static final String PASSWORD = "12345678";
+
+    private static Driver driver;
+
+    static {
+        // Instantiating without encryption
+        Config config = Config.builder().withoutEncryption().build();
+        driver = GraphDatabase.driver(URI, AuthTokens.basic(USERNAME, PASSWORD), config);
+    }
+
+    public static Session getSession() {
+        return driver.session();
+    }
+
+    public static void close() {
+        driver.close();
+    }
+
+    public static String toJson(Object object) {
+        if (object instanceof Map) {
+            return new JSONObject((Map<?, ?>) object).toString();
+        } else if (object instanceof List) {
+            return new JSONArray((List<?>) object).toString();
+        } else {
+            throw new IllegalArgumentException("Not supported");
+        }
+    }
+}
